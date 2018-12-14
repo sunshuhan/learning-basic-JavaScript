@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <title>prototype</title>
+</head>
+
+<body>
+    概念,参考地址：
+    <a href="https://github.com/creeperyang/blog/issues/9 ">https://github.com/creeperyang/blog/issues/9 </a>
+    <br> 原型链的尽头（root）是Object.prototype。所有对象均从Object.prototype继承属性
+
+    <div>
+        <ul>
+            <li>
+                var a = { x: 1 }; a.__proto__ === Object.prototype //true
+            </li>
+            <li>function a(xx) { 1 + 1; } a.prototype; //constructor, __proto__</li>
+            <li>function d(xx) { 3 + 1; } var cc = new d(); cc.__proto__; //constructor, __proto__</li>
+            <li>function e(xx) { 3 + 1; } var ff = new e(); ff.__proto__ === e.prototype //true</li>
+            <li>Object instanceof Function; //true</li>
+            <li>Function instanceof Object; //true</li>
+            <li>Function.prototype.__proto__ == Object.prototype; //true</li>
+            <li>var n = 1; n.__proto__; //Number...</li>
+            <li>var p = 1; p.__proto__.__proto__ === Object.prototype; //true</li>
+        </ul>
+    </div>
+    <script>
+        var a = { x: 1 }; a.__proto__ === Object.prototype //true
+        function a(xx) { 1 + 1; } a.prototype; //constructor,  __proto__
+        function d(xx) { 3 + 1; } var cc = new d(); cc.__proto__;  //constructor, __proto__
+        function e(xx) { 3 + 1; } var ff = new e(); ff.__proto__ === e.prototype //true
+        Object instanceof Function; //true
+        Function instanceof Object; //true
+        Function.prototype.__proto__ == Object.prototype; //true
+        var n = 1; n.__proto__; //Number...
+        var p = 1; p.__proto__.__proto__ === Object.prototype; //true
+    </script>
+</body>
+
+</html>
