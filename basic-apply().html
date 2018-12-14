@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <title>Function.prototype.apply()</title>
+</head>
+
+<body>
+    apply()方法调用一个具有给定this值的函数，以及作为一个数组提供的参数； call()方法接受的是参数列表，apply()接受的是一个参数数组
+    <div>
+        <span>
+            var numbers = [1, 2, 3, 9, 4, 5]; var max = Math.max.apply(null, numbers); console.log(max);
+        </span>
+    </div>
+    <br>
+    <div>
+        <span>
+
+            var arr1 = ['a', 'b']; var arrApply = ['a', 'b']; var arr2 = [0, 1, 2]; arr1.push(arr2); // ['a','b', [0,1,2]] console.info(arr1);
+            arrApply.push.apply(arrApply, arr2); console.info(arrApply); // ['a','b',0,1,2]
+        </span>
+    </div>
+    <script>
+        var numbers = [1, 2, 3, 9, 4, 5];
+        var max = Math.max.apply(null, numbers);
+        console.log(max);
+
+        var arr1 = ['a', 'b'];
+        var arrApply = ['a', 'b'];
+        var arr2 = [0, 1, 2];
+        arr1.push(arr2); // ['a','b', [0,1,2]]
+        console.info(arr1);
+        arrApply.push.apply(arrApply, arr2);
+        console.info(arrApply); // ['a','b',0,1,2]
+    </script>
+</body>
+
+</html>
