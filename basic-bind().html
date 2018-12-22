@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <title>Function.prototype.bind()</title>
+</head>
+
+<body>
+    <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">MDN 链接</a>
+    <ul>
+        <li>Creating a bound function 例子：bind()方法创建一个新的函数， 当这个新函数被调用时this键值为其提供的值，其参数列表前几项值为创建时指定的参数序列。</li>
+        <li>Partially applied functions 例子：使一个函数拥有预设的初始参数。这些参数作为bind（）的第二个参数跟在this后面，之后它们会被插入到目标函数的参数类表的开始位置，传递给绑定函数的参数会跟在它们后面</li>
+        <li>window.setTimeout() this关键字会指向window或全局对象。</li>
+        <li>实现bind函数 参考MDN链接的实现 或
+            <a href="https://segmentfault.com/a/1190000002662251">实现bind</a>
+        </li>
+    </ul>
+
+    <div></div>
+    <div>
+        具体请用文本编辑器看script部分
+    </div>
+    <script>
+        //实现bind函数
+        Function.prototype.bind = function (context) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            self = this; //保存bind的目标函数
+            return function () {
+                console.table(this);
+                return self.apply(context, arguments);
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+        //1. 创建绑定函数，使这个函数不论怎么调用都有同样的this值
+        this.x = 9;
+        var module = {
+            x: 81,
+            getX: function () { return this.x; }
+        };
+
+        module.getX();
+        console.log("module.getX() : " + module.getX()); //81
+
+        var retriveX = module.getX;
+        retriveX();
+        console.log("retriveX() : " + retriveX());   //9,this指向全局作用域
+
+        var boundGetX = retriveX.bind(module);
+        boundGetX();
+        console.log("boundGetX() : " + boundGetX()); //81
+
+        //2. 使一个函数拥有预设的初始参数
+        function list() {
+            console.table(arguments);
+            return Array.prototype.slice.call(arguments);
+        }
+
+        var list1 = list(1, 2, 3); //[1,2,3]
+        console.log("list1: " + list1);
+
+        var aList = list.bind(undefined, 99);
+
+        var list2 = aList(); //[99]
+        console.log("list2: " + list2);
+        var list3 = aList(1, 2, 3);
+        console.log("list3: " + list3); //[99,1,2,3]
+
+        //3. setTimeout 显式把this绑定到回调函数
+        function LateBloomer() {
+            this.petalCont = Math.ceil(Math.random() * 24) + 1;
+        }
+
+        LateBloomer.prototype.bloom = function () {
+            console.table(this);
+            window.setTimeout(this.declare.bind(this), 5000);
+        };
+
+        LateBloomer.prototype.bloomNoBound = function () {
+            console.table(this);
+            window.setTimeout(function () { console.table(this); console.log('I am a beautiful flower with ' + this.petalCont + ' petals!') }, 6000); //this指向全局对象
+        };
+
+        LateBloomer.prototype.declare = function () {
+            console.log('I am a beautiful flower with ' + this.petalCont + ' petals!');
+        };
+
+        var flower = new LateBloomer();
+        flower.bloom();
+        flower.bloomNoBound(); //I am a beautiful flower with undefined petals!
+
+
+    </script>
+</body>
+
+</html>
