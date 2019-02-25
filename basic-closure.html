@@ -1,0 +1,169 @@
+<html>
+
+<head>
+    <title>closure</title>
+</head>
+
+<body>
+    <p>翻译自：
+        <a href="https://stackoverflow.com/questions/111102/how-do-javascript-closures-work">https://stackoverflow.com/questions/111102/how-do-javascript-closures-work</a>
+    </p>
+    <p>当一个函数(foo)定义了其他函数时(bar and baz), foo函数退出后，它创建的局部变量不会被销毁。这些变量只是对外部世界不可见。Foo可以返回bar 和baz函数， 它们可以继续读取，写，并与 闭包中的变量交流，其他人不能访问，即时之后重新创建foo函数也不行
+    </p>
+    <div>an example of a closure</div>
+    <textarea style="width:600px;height:150px">
+        function sayHello2(name) {
+            var text = 'Hello ' + name; // Local variable
+            var say = function() { console.log(text); }
+            return say;
+          }
+          var say2 = sayHello2('Bob');
+          say2(); // logs "Hello Bob"
+    </textarea>
+
+    <p style="color:peru">在JavaScript中，如果你在一个函数中，使用了另一个function关键字， 你就创建了一个闭包。</p>
+    <textarea style="width:600px;height:150px">
+        function say667() {
+            var num = 42;
+            var say = function() {console.log(num);}
+            num++;
+            return say;
+        }
+        var sayNumber = say667();
+        sayNumber(); //43
+    </textarea>
+    <br>
+    <br>
+    <p>gLogNumber, gIncreaseNumber和gSetNumber都能访问同一个闭包，即定义它们的时候，setupSomeGlobals()中的局部变量</p>
+    <p>注意，如果再次调用setupSomeGlobals()，会创建一个新的闭包。 旧的gLogNumber, gIncreaseNumber, gSetNumber变量被有着新的闭包的新函数给覆盖了</p>
+    <p>在JavaScript中，如果你在一个函数中定义了另一个函数，每次调用外部函数的时候，内部的函数会被重新创建</p>
+    <textarea style="width:600px;height:280px">
+        var gLogNumber, gIncreaseNumber, gSetNumber;
+        function setupSomeGlobals() {
+            var num = 42;
+            gLogNumber = function(){console.log(num)};
+            gIncreaseNumber = function() {num++;}
+            gSetNumber = function(x) {num = x;}
+        }
+        setupSomeGlobals();
+        gIncreaseNumber();
+        gLogNumber(); //43
+        gSetNumber(5); 
+        gLogNumber(); //5
+
+        var oldLog = gLogNumber;
+        setupSomeGlobals();
+        gLogNumber(); //42
+        oldLog(); //5
+    </textarea>
+    <br>
+    <br>
+    <textarea style="width:600px;height:150px">
+        function sayAlice() {
+            var say = function() { console.log(alice);}
+            var alice = 'Hello aAlice';
+            return say;
+        }
+        sayAlice()(); //Hello Alice ，声明提前（variable hoisting）
+    </textarea>
+    <br>
+    <br>
+    <textarea style="width:600px;height:300px">
+        function buildList(list) {
+            var result = [];
+            for(var i = 0; i < list.length; i++) {
+                var item = 'item' + i;
+                //创建了匿名函数，其引用了list数组
+                result.push(function() {console.log(item+' '+list[i])}); 
+            }
+            return result;
+        }
+        
+        function testList() {
+            var fnlist = buildList([1,2,3]);
+            for(var j =0; j < fnlist.length; j ++){
+                fnlist[j]();
+            }
+        }
+        testList() //"item2 undefined" 3次， 只存在一个闭包
+    </textarea>
+    <textarea style="width:600px;height:300px">
+            function buildList(list) {
+                var result = [];
+                for(var i = 0; i < list.length; i++) {
+                    let item = 'item' + i; //item使用块级变量
+                    //创建了匿名函数，其引用了list数组
+                    result.push(function() {console.log(item+' '+list[i])}); 
+                }
+                return result;
+            }
+            
+            function testList() {
+                var fnlist = buildList([1,2,3]);
+                for(var j =0; j < fnlist.length; j ++){
+                    fnlist[j]();
+                }
+            }
+            testList() //"item0 undefined", "item1 undefined", "item2 undefined"
+    </textarea>
+    <textarea style="width:600px;height:300px">
+            function buildList(list) {
+                var result = [];
+                //i也使用块级变量
+                for(let i = 0; i < list.length; i++) {
+                    let item = 'item' + i; //item使用块级变量
+                    //创建了匿名函数，其引用了list数组
+                    result.push(function() {console.log(item+' '+list[i])}); 
+                }
+                return result;
+            }
+            
+            function testList() {
+                var fnlist = buildList([1,2,3]);
+                for(var j =0; j < fnlist.length; j ++){
+                    fnlist[j]();
+                }
+            }
+            testList() //"item0 1", "item1 2", "item2 3"
+    </textarea>
+    <br>
+    <br>
+    <p>每次调用newClosure时，会创建一个独立的闭包</p>
+    <textarea style="width:600px;height:450px">
+        function newClosure(someNum, someRef) {
+            var num = someNum;
+            var anArray = [1,2,3];
+            var ref = someRef;
+            return function(x){
+                num +=x;
+                anArray.push(num);
+                console.log('num: ' + num +
+                            '; anArray: ' + anArray.toString() +
+                            ';ref.someVar: ' + ref.someVar +';');
+            }
+        }
+        obj= {someVar:4};
+        fn1 = newClosure(4,obj);
+        fn2 = newClosure(5,obj);
+        fn1(1);
+        fn2(1);
+        obj.someVar++;
+        fn1(2);
+        fn2(2);
+        // num: 5; anArray: 1,2,3,5;ref.someVar: 4;
+        // num: 6; anArray: 1,2,3,6;ref.someVar: 4;
+        // num: 7; anArray: 1,2,3,5,7;ref.someVar: 5;
+        // num: 8; anArray: 1,2,3,6,8;ref.someVar: 5;
+        //注意：var a = 1; var b = a; a = 2; b; 1 var a = {"val":1}; var b = a; a.val = 2; b.val; 2
+    </textarea>
+    <br>
+    <br>
+    <ul>总结
+        <li>在函数中使用另一个函数，会用到闭包</li>
+        <li>函数中的new Function不会产生闭包</li>
+        <li>JavaScript中的闭包就像是保存了函数退出时，局部变量的备份</li>
+        <li>一个包含闭包的函数，每次被调用时，会保存一份心的局部变量</li>
+    </ul>
+</body>
+
+</html>
