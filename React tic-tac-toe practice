@@ -1,0 +1,319 @@
+//index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+/* function Square(props) {
+
+    return (
+        <button className="square" onClick={props.onClick}>
+            {props.value}
+        </button>
+    );
+} */
+
+class Square extends React.Component {
+    render() {
+        let className = 'square';
+        if (this.props.strong) {
+            className += ' strong';
+        }
+        return (
+            <button className={className} onClick={this.props.onClick}>
+                {this.props.value}
+            </button>
+        );
+    }
+}
+
+function calculateWinner(squares) {
+    const lines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+    ];
+    for (let i = 0; i < lines.length; i++) {
+        const [a, b, c] = lines[i];
+        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+            return {
+                player: squares[a],
+                success: [a, b, c]
+            };
+        }
+    }
+    return null;
+}
+
+class Board extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            strong: Array(9).fill(null),
+        }
+    }
+
+    renderSquare(i) {
+        return (
+            <Square
+                value={this.props.squares[i]}
+                strong={this.state.strong[i]}
+                onClick={() => this.props.onClick(i)}
+            />
+        );
+    }
+
+    render() {
+        let result = calculateWinner(this.props.squares);
+        if (result) {
+            for (let i = 0; i < 3; i++) {
+                this.state.strong[result.success[i]] = true;
+            }
+
+        }
+        else {
+            this.state.strong = Array(9).fill(null);
+        }
+        const arrs = Array(3);
+        for (let j = 0; j < 3; j++) {
+            const items = Array(3);
+            for (let k = 0; k < 3; k++) {
+                items[k] = this.renderSquare(j * 3 + k);
+
+            }
+            arrs[j] = (
+                <div className="board-row">{items}</div>
+            );
+        }
+        return (
+            <div>{arrs}</div>
+        );
+        /*         return (
+                    <div>
+                        <div className="board-row">
+                            {this.renderSquare(0)}
+                            {this.renderSquare(1)}
+                            {this.renderSquare(2)}
+                        </div>
+                        <div className="board-row">
+                            {this.renderSquare(3)}
+                            {this.renderSquare(4)}
+                            {this.renderSquare(5)}
+                        </div>
+                        <div className="board-row">
+                            {this.renderSquare(6)}
+                            {this.renderSquare(7)}
+                            {this.renderSquare(8)}
+                        </div>
+                    </div>
+                ); */
+    }
+}
+
+class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            history: [{
+                squares: Array(9).fill(null),
+            }],
+            xIsNext: true,
+            stepNumber: 0,
+            order: 0
+        };
+    }
+    handleClick(i) {
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            history: history.concat([{
+                squares: squares,
+            }]),
+            xIsNext: !this.state.xIsNext,
+            stepNumber: history.length,
+        });
+    }
+
+    jumpTo(step) {
+        this.setState({
+            stepNumber: step,
+            xIsNext: (step % 2) === 0,
+        });
+    }
+
+    reverseOrder() {
+        this.setState({
+            order: this.state.order === 0 ? 1 : 0
+        })
+    }
+    render() {
+        const history = this.state.history;
+        const current = history[this.state.stepNumber];
+        const winner = calculateWinner(current.squares);
+        const order = this.state.order;
+        const moves = history.map((step, move) => {
+            let col;
+            let row;
+            const desc = move ?
+                'Go to move #' + move :
+                'Go to game start';
+            if (move > 0) {
+                let previousStep = history[move - 1];
+                let currentStep = history[move];
+                for (let i = 0; i < 9; i++) {
+                    if (previousStep.squares[i] != currentStep.squares[i]) {
+                        col = i % 3 + 1;
+                        row = Math.round(i / 3) % 3 + 1;
+                        break;
+                    }
+                }
+            }
+            return (
+                <li key={move} className={this.state.stepNumber === move ? 'current-step' : ''}>
+                    <button onClick={() => this.jumpTo(move)}>{desc} {col ? 'col: ' + col : ''} {row ? 'row: ' + row : ''} </button>
+                </li>
+            );
+        });
+        if (order) {
+            moves.reverse();
+        }
+        let status;
+        let player;
+        let successSteps = [];
+        if (winner) {
+            player = calculateWinner(current.squares).player;
+            successSteps = calculateWinner(current.squares).success;
+            status = 'Winner: ' + player;
+        } else {
+            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
+
+        if (this.state.stepNumber === 9 && !winner) {
+            status = "No one wins, draw";
+        }
+        return (
+            <div className="game">
+                <div className="game-board">
+                    <Board
+                        squares={current.squares}
+                        onClick={(i) => this.handleClick(i)}
+                        successSteps={successSteps}
+                    />
+                </div>
+                <div className="game-info">
+                    <div>{status}</div>
+                    <ol>{moves}</ol>
+                    <button onClick={() => this.reverseOrder()}>toggle order</button>
+                </div>
+            </div>
+        );
+    }
+}
+
+// shopping list example
+/* class ShoppingList extends React.Component {
+    render() {
+        return (
+            <div className="shopping-list">
+                <h1>Shopping list for {this.props.name}</h1>
+                <ul>
+                    <li>a</li>
+                    <li>b</li>
+                    <li>c</li>
+                </ul>
+            </div>
+        )
+    }
+}
+ */
+// shopping list example
+/* ReactDOM.render(
+    <ShoppingList name="sunshuhan" />,
+    document.getElementById('root')
+);  */
+
+// ========================================
+ReactDOM.render(
+    <Game />,
+    document.getElementById('root')
+);
+
+// ========================================
+ReactDOM.render(
+    <Game />,
+    document.getElementById('root')
+);
+
+
+------------------
+
+index.css
+body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+  }
+  
+  ol, ul {
+    padding-left: 30px;
+  }
+  
+  .board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+  }
+  
+  .status {
+    margin-bottom: 10px;
+  }
+  
+  .square {
+    background: #fff;
+    border: 1px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 34px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 34px;
+  }
+  
+  .square.strong {
+    color:green;
+  }
+  .square:focus {
+    outline: none;
+  }
+  
+  .kbd-navigation .square:focus {
+    background: #ddd;
+  }
+  
+  .game {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .game-info {
+    margin-left: 20px;
+  }
+  
+  li.current-step {
+    font-weight: bold;
+  }
+
+  li {
+    min-width:300px;
+  }
