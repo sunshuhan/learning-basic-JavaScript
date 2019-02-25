@@ -182,6 +182,28 @@
         var b = fun(0).fun(1).fun(2).fun(3); //undefined 0 1 2
         var c = fun(0).fun(1); c.fun(2); c.fun(3); //undefined 0 1 1 
     </textarea>
+    <br>
+    <br>
+    <p>setTimout</p>
+    <p>每秒log一次6，共5次</p>
+    <textarea style="width:600px;height:200px">
+            for(var i = 1; i <=5; i++){
+                setTimeout(function timer(){
+                    console.log(i);
+            },i*1000);
+            }
+        </textarea>
+    <p>setTimeout的意思是传递一个函数，延迟一段时候把该函数添加到队列当中，并不是立即执行；</p>
+    <textarea style="width:600px;height:200px">
+        //正确的
+            for(var i = 1; i <=5; i++){
+                (function(j){
+                    setTimeout(function timer(){
+                        console.log(j);
+                },i*1000);
+                })(i);
+                 }
+        </textarea>
 </body>
 
 </html>
