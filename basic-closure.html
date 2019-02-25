@@ -164,6 +164,24 @@
         <li>JavaScript中的闭包就像是保存了函数退出时，局部变量的备份</li>
         <li>一个包含闭包的函数，每次被调用时，会保存一份心的局部变量</li>
     </ul>
+
+
+    <br>
+    <br>
+    <p>其他例子</p>
+    <textarea>
+        function fun(n,o) {
+            console.log(o);
+            return {
+                fun:function(m){
+                    return fun(m,n);
+                }
+            };
+        }
+        var a = fun(0);a.fun(1); a.fun(2); a.fun(3); //undefined 0 0 0
+        var b = fun(0).fun(1).fun(2).fun(3); //undefined 0 1 2
+        var c = fun(0).fun(1); c.fun(2); c.fun(3); //undefined 0 1 1 
+    </textarea>
 </body>
 
 </html>
