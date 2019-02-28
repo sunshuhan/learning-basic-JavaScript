@@ -1,0 +1,84 @@
+<html ng-app="myApps">
+
+<head>
+    <title>practice ui-router advanced nested views</title>
+    <style>
+        .active {
+            color: cadetblue;
+            font-weight: bolder;
+        }
+
+        .container {
+            width: 800px;
+            height: 600px;
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+
+<body>
+    main page
+    <br />
+    <a ui-sref="leftmenu1" ui-sref-active="active">left menu 1</a>
+    <br />
+    <a ui-sref="leftmenu2" ui-sref-active="active">left menu 2</a>
+    <div class="container">
+        <div ui-view></div>
+    </div>
+
+
+    <script src="angular.min.js"></script>
+    <script src="angular-ui-router.min.js"></script>
+    <script>
+        var app = angular.module('myApps', ['ui.router'])
+        app.config(function ($stateProvider, $urlRouterProvider) {
+            $urlRouterProvider.otherwise("/menu1");
+            $stateProvider.state("leftmenu1", {
+                url: '/menu1',
+                templateUrl: "particals/view1.html",
+                controller: 'SimpleController'
+            });
+            $stateProvider.state("leftmenu2", {
+                url: '/menu2',
+                template: "menu2 content",
+            });
+            $stateProvider.state("leftmenu1.subpage", {
+                url: '/subpage',
+                templateUrl: 'particals/view2.html'
+            });
+        });
+
+        app.factory('SimpleFactory', function () {
+            var factory = {};
+            var customers = [
+                { name: 'Alphy Poxy', city: 'Mbita' },
+                { name: 'Kibaki Watson', city: 'Kikuyu' },
+                { name: 'John Legend', city: 'Lake' },
+                { name: 'Sony', city: 'HB' }
+            ];
+            factory.getCustomers = function () {
+                return customers;
+            }
+            return factory;
+        });
+
+        app.controller('SimpleController', function ($scope, SimpleFactory) {
+            $scope.customers = [];
+            init();
+            function init() {
+                $scope.customers = SimpleFactory.getCustomers();
+            }
+
+            $scope.addCustomer = function () {
+                $scope.customers.push({
+                    name: $scope.newCustomer.name,
+                    city: $scope.newCustomer.city
+                })
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>
