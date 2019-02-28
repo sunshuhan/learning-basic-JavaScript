@@ -1,0 +1,63 @@
+<html data-ng-app="myApps">
+
+<head>
+    <title>practice routes</title>
+</head>
+
+<body>
+    main page
+    <div data-ng-view=""></div>
+    <script src="angular.min.js"></script>
+    <script src="angular-route.js"></script>
+    <script>
+        var app = angular.module('myApps', ['ngRoute']);
+        console.log(app);
+        app.config(function ($routeProvider) {
+            $routeProvider.when('/view1', {
+                controller: 'SimpleController',
+                templateUrl: 'particals/view1.html'
+            })
+                .when('/view2', {
+                    controller: 'SimpleController',
+                    templateUrl: 'particals/view2.html'
+                })
+                .otherwise({
+                    redirectTo: '/view1'
+                });
+        });
+
+        app.factory('SimpleFactory', function ($http) {
+            var factory = {};
+            var customers = [
+                { name: 'Alphy Poxy', city: 'Mbita' },
+                { name: 'Kibaki Watson', city: 'Kikuyu' },
+                { name: 'John Legend', city: 'Lake' },
+                { name: 'Sony', city: 'HB' }
+            ];
+            factory.getCustomers = function () {
+                return customers;
+            }
+            factory.postCustomers = function (customers) {
+
+            }
+            return factory;
+        });
+
+        app.controller('SimpleController', function ($scope, SimpleFactory) {
+            $scope.customers = [];
+            init();
+            function init() {
+                $scope.customers = SimpleFactory.getCustomers();
+            }
+            $scope.addCustomer = function () {
+                $scope.customers.push({
+                    name: $scope.newCustomer.name,
+                    city: $scope.newCustomer.city
+                });
+            }
+        })
+
+    </script>
+</body>
+
+</html>
