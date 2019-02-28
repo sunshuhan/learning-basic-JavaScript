@@ -1,0 +1,32 @@
+<html>
+
+<head>
+    <title>practice</title>
+</head>
+
+<body>
+    <div ng-app="myApps" ng-controller="SimpleController">
+        Name:
+        <input type="text" ng-model="name" />
+        <ul>
+            <li ng-repeat="coders in customers | filter:name">{{coders.name}}-{{coders.city}}</li>
+        </ul>
+    </div>
+    <script src="angular.min.js"></script>
+    <script>
+        var app = angular.module('myApps', []);
+        console.log(app);
+
+        app.controller('SimpleController', function ($scope) {
+            $scope.customers = [
+                { name: 'Alphy Poxy', city: 'Mbita' },
+                { name: 'Kibaki Watson', city: 'Kikuyu' },
+                { name: 'John Legend', city: 'Lake' },
+                { name: 'Sony', city: 'HB' }
+            ];
+        })
+
+    </script>
+</body>
+
+</html>
