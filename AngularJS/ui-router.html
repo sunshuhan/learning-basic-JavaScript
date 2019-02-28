@@ -1,0 +1,48 @@
+<html data-ng-app="myApps">
+
+<head>
+    <title>practice routes</title>
+    <style>
+        .active {
+            color: cadetblue;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+
+<body>
+    main page
+    <a ui-sref="hello" ui-sref-active="active">Hello</a>
+    <a ui-sref="about" ui-sref-active="active">about</a>
+    <ui-view></ui-view>
+    <script src="angular.min.js"></script>
+    <script src="angular-ui-router.min.js"></script>
+    <script>
+        var app = angular.module('myApps', ['ui.router']);
+        console.log(app);
+
+
+        app.config(['$stateProvider', function ($stateProvider) {
+            console.log($stateProvider);
+            var helloState = {
+                name: 'hello',
+                url: '/hello',
+                template: '<h3>hello world</h3>'
+            };
+            var aboutState = {
+                name: 'about',
+                url: '/about',
+                template: '<h3>about page</h3>'
+            };
+            $stateProvider.state(helloState);
+            $stateProvider.state(aboutState);
+        }]);
+
+
+
+
+
+    </script>
+</body>
+
+</html>
