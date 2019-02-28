@@ -1,0 +1,52 @@
+<html ng-app="myApps">
+
+<head>
+    <title>practice ui-router advanced</title>
+    <style>
+        .active {
+            color: cadetblue;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+
+<body>
+    <a ui-sref="home" ui-sref-active="active">home</a>
+    <a ui-sref="about1({id:1})" ui-sref-active="active">view11</a>
+    <a ui-sref="about2" ui-sref-active="active">view22</a>
+    <div ui-view></div>
+
+
+    <script src="angular.min.js"></script>
+    <script src="angular-ui-router.min.js"></script>
+    <script>
+        var app = angular.module('myApps', ['ui.router']);
+        app.config(function ($stateProvider, $urlRouterProvider) {
+            $urlRouterProvider.otherwise("/home");
+            $stateProvider.state("home", {
+                url: '/home',
+                template: "template content home"
+            });
+            $stateProvider.state("about1", {
+                url: '/about1',
+                params: {
+                    name: null,
+                    id: 34
+                },
+                controller: function ($scope, $stateParams) {
+                    console.log($stateParams);
+                },
+                template: "template content about1"
+            });
+
+            $stateProvider.state("about2", {
+                url: '/about2',
+                template: "template content about2"
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
