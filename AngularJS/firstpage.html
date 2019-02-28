@@ -1,0 +1,25 @@
+<html ng-app>
+
+<head>
+    <title>AngularJSIn60Minutes -- practice</title>
+</head>
+
+<body data-ng-init="customers=[{name:'John Smith', city:'Phoenix'},{name:'Jane Doe', city:'San Francisco'},{name:'John Doe', city:'New York'}]">
+    <div class="container">
+        currency filter:
+        <input type="text" ng-model="money" />{{money|currency}}
+        <br> date filter
+        <input type="text" ng-model="date" />{{date|date}}
+        <br> customers|filter:'smith' : {{customers|filter:'smith'}}
+        <br> number filter (number|number:2)
+        <input type="text" ng-model="number" />{{number|number:2}}
+    </div>
+    <ul>
+        <li data-ng-repeat="cust in customers | filter: name |orderBy:'city'">
+            {{cust.name |uppercase}} - {{ cust.city | lowercase}}
+        </li>
+    </ul>
+    <script src="angular.min.js"></script>
+</body>
+
+</html>
